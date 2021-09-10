@@ -1,11 +1,6 @@
-# Loot
+# MLoot
 
-Community-operated [website](https://www.lootproject.com/) for the Loot project.
-
-## Contribute
-
-- Update FAQ in `/pages/faq.tsx`
-- Update Resources in `/utils/lists.ts`
+[MLoot Project](https://www.mlootproject.com/) official site base on open source [Loot](https://www.lootproject.com/) project.
 
 ## Run locally
 

@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mloot-site
+spec:
+  type: NodePort
+  selector:
+    app: mloot-site
+  ports:
+    - protocol: "TCP"
+      port: 80
+      targetPort: 3000
+#   type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mloot-site
+spec:
+  selector:
+    matchLabels:
+      app: mloot-site
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: mloot-site
+    spec:
+      containers:
+      - name: mloot-site
+        image: docker.io/ligulfzhou53/mloot-site
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
