@@ -1,10 +1,7 @@
-// Imports
-import Link from "next/link"; // Routing
-import { useRouter } from "next/router"; // Routing
-import { default as HTMLHead } from "next/head"; // Meta
-import styles from "@styles/components/Layout.module.scss"; // Styles
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { default as HTMLHead } from "next/head";
 
-// Types
 import type { ReactElement } from "react";
 
 export default function Layout({
@@ -14,53 +11,43 @@ export default function Layout({
 }) {
   return (
     <div>
-      {/* Meta */}
       <Head />
-      {/* Top header */}
       <Header />
-
-      {/* Page content */}
-      <div className={styles.content}>{children}</div>
-      {/* Bottom footer */}
+      <div className="">{children}</div>
       <Footer />
     </div>
   );
 }
 
-/**
- * Meta HTML Head
- * @returns {ReactElement} HTML Head component
- */
 function Head(): ReactElement {
   return (
     <HTMLHead>
-      {/* Primary Meta Tags */}
-      <title>Loot</title>
-      <meta name="title" content="Loot" />
+      <title>MLoot</title>
+      <meta name="title" content="MLoot" />
       <meta
         name="description"
-        content="Loot is randomized adventurer gear generated and stored on chain."
+        content="MLoot is randomly generated with 12 english mnemonic words and stored on chain."
       />
 
       {/* OG + Faceook */}
       <meta property="og:type" content="website" />
-      <meta property="og:url" content="https://www.lootproject.com/" />
-      <meta property="og:title" content="Loot" />
+      <meta property="og:url" content="https://www.mlootproject.com/" />
+      <meta property="og:title" content="MLoot" />
       <meta
         property="og:description"
-        content="Loot is randomized adventurer gear generated and stored on chain."
+        content="MLoot is randomly generated with 12 english mnemonic words and stored on chain."
       />
-      <meta property="og:image" content="https://lootproject.com/meta.png" />
+      <meta property="og:image" content="https://mlootproject.com/meta.png" />
 
       {/* Twitter */}
       <meta property="twitter:card" content="summary_large_image" />
-      <meta property="twitter:url" content="https://www.lootproject.com/" />
-      <meta property="twitter:title" content="Loot" />
+      <meta property="twitter:url" content="https://www.mlootproject.com/" />
+      <meta property="twitter:title" content="MLoot" />
       <meta
         property="twitter:description"
-        content="Loot is randomized adventurer gear generated and stored on chain."
+        content="MLoot is randomly generated with 12 english mnemonic words and stored on chain."
       />
-      <meta property="twitter:image" content="https://lootproject.com/meta.png" />
+      <meta property="twitter:image" content="https://mlootproject.com/meta.png" />
 
       {/* Font */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -92,37 +79,20 @@ function Header() {
   ];
 
   return (
-    <div className={styles.header}>
-      {/* Main logo */}
-      <div className={styles.header__logo}>
+    <div className="flex flex-row px-5 py-5 m-auto justify-around justify-items-center">
+      <div className="text-3xl hover:opacity-80">
         <Link href="/">
-          <a>Loot</a>
+          <a className="">MLoot</a>
         </Link>
       </div>
 
-      {/* Navigation */}
-      <div className={styles.header__links}>
-        <ul>
-          {links.map(({ name, path }, i) => {
-            // For each link, render link
-            return (
-              <li key={i}>
-                <Link href={path}>
-                  <a
-                    className={
-                      pathname === path
-                        ? // Active class if pathname matches current path
-                          styles.header__links_active
-                        : undefined
-                    }
-                  >
-                    {name}
-                  </a>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+      <div className="flex text-gray-500 text-2xl justify-end flex-row">
+          {/*<Link href="/faq" >*/}
+          {/*    <a className="m-2"> FAQ </a>*/}
+          {/*</Link>*/}
+          <Link href="/mint">
+              <a className="m-2"> Mint </a>
+          </Link>
       </div>
     </div>
   );
@@ -134,11 +104,11 @@ function Header() {
  */
 function Footer(): ReactElement {
   return (
-    <div className={styles.footer}>
+    <div className="text-center p-4">
       <p>
         This website is{" "}
         <a
-          href="https://github.com/lootproject/website"
+          href="https://github.com/mlootproject/website"
           target="_blank"
           rel="noopener noreferrer"
         >
