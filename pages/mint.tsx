@@ -1,136 +1,106 @@
-// Imports
-import Link from "next/link"; // Routing
-import Layout from "@components/Layout"; // Layout wrapper
-// import styles from "@styles/pages/FAQ.module.scss"; // Page styles
+import Link from "next/link";
+import Layout from "@components/Layout";
+import {useWeb3React} from "@web3-react/core";
+import {Web3Provider} from "@ethersproject/providers";
 
-// Types
-import type { ReactElement } from "react";
+import {ReactElement, useState, useEffect } from "react";
 
-// FAQ page
-export default function FAQ(): ReactElement {
+
+interface MlootNft {
+    id: number;
+    word_list: Array<string>;
+}
+
+export default function Mint(): ReactElement {
+    
+    const [mloots, setMLoots] = useState<Array<MlootNft>>([]);
+    const [count, setCount] = useState(1);
+    const {active, account, activate, chainId} = useWeb3React();
+
+    const mint = ()=> {
+        if (!active) {
+            alert("please connect to mainnet")
+        }
+        console.log('mint....', count)
+    }
+
+    useEffect(() => {
+        fetch("http://localhost/mloot/random/1").then(data=> {
+            return data.json()
+        }).then((js) => {
+            console.log(js)
+            setMLoots(js);
+        })
+    }, [])
+
+    // @ts-ignore
+    const inputChange = (e) => {
+        console.log("set count to ", e.target.value)
+        setCount(e.target.value)
+    }
+
     return (
         <Layout>
-            {/*<div className={styles.faq}>*/}
-            <div className="">
-                <h2>Frequently Asked Questions</h2>
-
-                {/* What is loot ? */}
-                <div className="">
-                    {/*<div className={styles.faq__item}>*/}
-                    <h3>What is MLoot?</h3>
-                    <p>
-                        MLoot is a collection of 10,000 unique bags of 12 english mnemonic words,
-                        originally released by{" "}
-                        <a
-                            href="https://twitter.com/dhof/status/1431316631934967815"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            Dom Hofmann
-                        </a>
-                        . At release, anyone could claim loot bags for just gas, and all
-                        bags were claimed in under 4 hours. Each loot bag contains 8 items:
-                        a piece for an adventurer&apos;s chest, foot, hand, head, neck, ring,
-                        waist, and weapon.
-                    </p>
-                    <p>
-                        Loot is an unaudited project. Bags #1 to #7777 were claimable by
-                        anyone and #7778 to #8000 are currently reserved for the contract
-                        deployer.
-                    </p>
+            <div className="container mx-auto flex px-5 py-24 md:flex-row flex-col items-center">
+                <div className="lg:max-w-lg lg:w-full md:w-1/3 w-5/6 mb-10 md:mb-0 flex flex-row container justify-end md:justify-center">
+                    { mloots.map(({id, word_list}, i)=> (
+                        <div className="w-80 h-80 p-2 bg-black rounded">
+                            <ul>
+                                {word_list.map((word, i) => (
+                                    <li key={i} className="text-left">
+                                        <span>{word}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
                 </div>
 
-                {/* Why is loot special? */}
-                <div className="">
-                    {/*<div className={styles.faq__item}>*/}
-                    <h3>Why is loot special?</h3>
-                    <p>
-                        Loot is unique—the first project of its kind. With no company, art,
-                        team, or attributes, Loot makes it impossible to gate-keep any
-                        creative decisions (h/t{" "}
-                        <a
-                            href="https://twitter.com/john_c_palmer/status/1432606797186179072?s=20"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            @john_c_palmer
-                        </a>
-                        ).
+                <div className="lg:flex-grow md:w-2/3 lg:pl-24 md:pl-16 flex flex-col md:items-start md:text-left items-center text-center">
+                    <h1 className="title-font sm:text-4xl text-3xl mb-4 font-medium text-white">
+                        MLoot - Mnemonic Loot
+                    </h1>
+                    <p className="mb-8 leading-relaxed text-xl">
+                        buddy, you will receive random generate MLoots.
                     </p>
                     <p>
-                        Loot is the unfiltered, uncensorable building block for stories,
-                        experiences, games, and more, in the hands of the community, at no
-                        cost. Loot pursues complete decentralization from day one.
+                        - Please select the number of Soldiers you wish to buy then click MINT button.
                     </p>
-                </div>
+                    <p>
+                        - A maximum of 20 MLoots can be minted at a time.
+                    </p>
+                    <p className="text-red-500">
+                        - All mint fee will be donated to the poor by <a href="https://www.givedirectly.org" rel="noreferrer" target="_blank" className="underline text-red-500">givedirectly.org</a>. 
+                    </p>
+                    <br/>
+                    <h3 className="text-2xl">
+                        Price: 0.01Ξ(ETH)
+                    </h3>
+                    <div className="form-control">
+                        <label className="label">
+                            <span className="label-text text-red-400">Count(1~20)</span>
+                        </label>
+                        <div className="flex space-x-2">
+                            <input type="number" defaultValue={1} className="w-full input input-primary input-bordered text-black" onChange={inputChange}/>
+                            <button className="btn btn-primary" onClick={mint}>
+                                mint
+                            </button>
+                        </div>
+                    </div>
 
-                {/* Can I build with loot? */}
-                <div className="">
-                    {/*<div className={styles.faq__item}>*/}
-                    <h3>Can I build with Loot?</h3>
-                    <p>
-                        Yes, you are free to use Loot in any way you want. For inspiration,
-                        see existing{" "}
-                        <Link href="/resources">
-                            <a>resources</a>
-                        </Link>{" "}
-                        put together by the community.
-                    </p>
-                </div>
-
-                {/* Am I priced out of loot? */}
-                <div className="">
-                    {/*<div className={styles.faq__item}>*/}
-                    <h3>Am I priced out of loot?</h3>
-                    <p>
-                        Not at all. Through{" "}
-                        <a
-                            href="https://twitter.com/dhof/status/1433110412187287560?s=20"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            Synthetic Loot
-                        </a>
-                        , all addresses have access to virtual Loot that developers can
-                        integrate into the Loot projects they build.
+                    <p className="mt-8 leading-relaxed text-xl">
+                        you can also mint MLoot free of charge.
                     </p>
                     <p>
-                        Thus, anyone with an Ethereum wallet is allowed to participate in
-                        the ecosystem, while still maintaining distinction between original
-                        Loot and synthetics.
-                    </p>
-                </div>
-
-                {/* How do I value loot bags? */}
-                <div className="">
-                    {/*<div className={styles.faq__item}>*/}
-                    <h3>How do I value Loot bags?</h3>
-                    <p>
-                        They say that value is always in the eye of the beholder. Loot is no
-                        different, with no explicit rarities specified at launch. How you
-                        value a loot bag is up to you.
+                        - One address can only mint 3 MLoots.
                     </p>
                     <p>
-                        Still, the community has begun to devise many mechanisms by which to
-                        assess the rarity of bags and their items. Some of these include{" "}
-                        <a
-                            href="https://github.com/Anish-Agnihotri/dhof-loot/blob/master/output/rare.json"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            rarity by occurence
-                        </a>{" "}
-                        or{" "}
-                        <a
-                            href="https://0xinventory.app/help"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            item score
-                        </a>
-                        .
+                        - Only one MLoot can be minted at a time.
                     </p>
-                    <p>Remember, use your own discretion when valuing a loot bag.</p>
+                    
+                    <button className="btn btn-secondary" onClick={mint}>
+                        mint one freely
+                    </button>
                 </div>
             </div>
         </Layout>

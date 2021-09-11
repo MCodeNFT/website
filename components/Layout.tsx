@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { default as HTMLHead } from "next/head";
-
+import ConnectButton from "./ConnectButton";
 import type { ReactElement } from "react";
 
 export default function Layout({
@@ -93,6 +93,7 @@ function Header() {
           <Link href="/mint">
               <a className="m-2"> Mint </a>
           </Link>
+          <ConnectButton />
       </div>
     </div>
   );
@@ -111,6 +112,7 @@ function Footer(): ReactElement {
           href="https://github.com/mlootproject/website"
           target="_blank"
           rel="noopener noreferrer"
+          className="underline"
         >
           open-source
         </a>

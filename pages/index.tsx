@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Layout from "@components/Layout";
-import {defaultBags} from "@utils/constants";
 
 import type {ReactElement} from "react";
 import {useEffect, useState} from "react";
