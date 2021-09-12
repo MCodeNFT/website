@@ -14,7 +14,7 @@ export default function Home(): ReactElement {
     const [mloots, setMLoots] = useState<Array<MlootNft>>([]);
 
     useEffect(() => {
-        fetch("http://localhost/mloot/random/4").then(data => {
+        fetch("/mloot/random/4").then(data => {
             return data.json()
         }).then((js) => {
             console.log(js)
@@ -65,7 +65,7 @@ export default function Home(): ReactElement {
                     <div className="container px-5 py-3 mx-auto">
                         <div className="flex flex-row gap-2">
                             { mloots.map(({id, word_list}, i)=> (
-                                <div className="lg:w-2/9 lg:h-2/9 md:w-2/5 md:h-2/9 p-4 w-full bg-black rounded">
+                                <div className="lg:w-2/9 lg:h-2/9 md:w-2/5 md:h-2/9 p-4 w-full bg-black rounded" key={i}>
                                        <ul>
                                            {word_list.map((word, i) => (
                                                <li key={i} className="text-left">

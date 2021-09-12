@@ -25,7 +25,7 @@ export default function Mint(): ReactElement {
     }
 
     useEffect(() => {
-        fetch("http://localhost/mloot/random/1").then(data=> {
+        fetch("/mloot/random/1").then(data=> {
             return data.json()
         }).then((js) => {
             console.log(js)
@@ -44,7 +44,7 @@ export default function Mint(): ReactElement {
             <div className="container mx-auto flex px-5 py-24 md:flex-row flex-col items-center">
                 <div className="lg:max-w-lg lg:w-full md:w-1/3 w-5/6 mb-10 md:mb-0 flex flex-row container justify-end md:justify-center">
                     { mloots.map(({id, word_list}, i)=> (
-                        <div className="w-80 h-80 p-2 bg-black rounded">
+                        <div className="w-80 h-80 p-2 bg-black rounded" key={i}>
                             <ul>
                                 {word_list.map((word, i) => (
                                     <li key={i} className="text-left">
