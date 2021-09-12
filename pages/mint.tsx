@@ -18,7 +18,6 @@ interface MlootNft {
 }
 
 export default function Mint(): ReactElement {
-
     const [mloots, setMLoots] = useState<Array<MlootNft>>([]);
     const [count, setCount] = useState(1);
     const {active, account, activate, chainId, library} = useWeb3React();
@@ -26,8 +25,27 @@ export default function Mint(): ReactElement {
     const [isErrorOpen, setIsErrorOpen] = useState(false)
     const [isTransactionOpen, setIsTransactionOpen] = useState(false);
 
+    const [claimCnt, setClaimCnt] = useState(1);
+    const [claimAddr, setClaimAddr] = useState("");
+
     const [errorMsg, setErrorMsg] = useState("");
     const [transactionId, setTransactionId] = useState("");
+
+    useEffect(() => {
+        fetch("/mloot/random/1").then(data => {
+            return data.json()
+        }).then((js) => {
+            console.log(js)
+            setMLoots(js);
+        })
+    }, [])
+
+    useEffect(() => {
+        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
+            const contract = getContract()
+            console.log(contract)
+        }
+    }, [active])
 
     const closeErrorModal = () => {
         setIsErrorOpen(false)
@@ -76,6 +94,10 @@ export default function Mint(): ReactElement {
             const contract = new Contract(address, ABI, library.getSigner())
             contract.claim().then((res: object) => {
                 console.log(res)
+
+                // @ts-ignore
+                setTransactionId(res["hash"])
+                openTransactionModal()
             }).catch((error: object) => {
                 // @ts-ignore
                 // alert(error['message'])
@@ -100,6 +122,109 @@ export default function Mint(): ReactElement {
         }
     }
 
+    const claimReserved = () => {
+        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
+            const contract = new Contract(address, ABI, library.getSigner())
+            contract.claimReserved(10, claimAddr).then((res: object) => {
+                console.log(res)
+                // @ts-ignore
+                setTransactionId(res["hash"])
+                openTransactionModal()
+            }).catch((error: object) => {
+                // @ts-ignore
+                // alert(error['message'])
+                console.log(error['data'])
+                //alert(error['message'])
+                // @ts-ignore
+                if (error['data'] != null && error['data'] != undefined) {
+                    // @ts-ignore
+                    setErrorMsg(error['data']['message'])
+                } else {
+                    // @ts-ignore
+                    setErrorMsg(error['message'])
+                }
+                openErrorModal()
+            })
+        } else {
+            alert("please connect to mainnet")
+            return
+        }
+    }
+
+    const tokenURI = () => {
+        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
+            const contract = new Contract(address, ABI, library.getSigner())
+            contract.tokenURI(10).then((res: object) => {
+                console.log(res)
+                // @ts-ignore
+                setTransactionId(res["hash"])
+                openTransactionModal()
+            }).catch((error: object) => {
+                // @ts-ignore
+                // alert(error['message'])
+                console.log(error['data'])
+                //alert(error['message'])
+                // @ts-ignore
+                if (error['data'] != null && error['data'] != undefined) {
+                    // @ts-ignore
+                    setErrorMsg(error['data']['message'])
+                } else {
+                    // @ts-ignore
+                    setErrorMsg(error['message'])
+                }
+                openErrorModal()
+            })
+        } else {
+            alert("please connect to mainnet")
+            return
+        }
+    }
+
+    const getBalance = () => {
+        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
+            const contract = new Contract(address, ABI, library.getSigner())
+            contract.balanceOf('0x2A0CFDe00155b19a7Cf625c1c68d905e55adcf7b').then((res: object) => {
+                console.log(res)
+            }).catch((error: object) => {
+                // @ts-ignore
+                // alert(error['message'])
+                console.log(error['data'])
+                //alert(error['message'])
+                // @ts-ignore
+                if (error['data'] != null && error['data'] != undefined) {
+                    // @ts-ignore
+                    setErrorMsg(error['data']['message'])
+                } else {
+                    // @ts-ignore
+                    setErrorMsg(error['message'])
+                }
+                openErrorModal()
+            })
+
+            contract.balanceOf('0x964B071d70231462D7B6fb06DcE638845863eF62').then((res: object) => {
+                console.log(res)
+            }).catch((error: object) => {
+                // @ts-ignore
+                // alert(error['message'])
+                console.log(error['data'])
+                //alert(error['message'])
+                // @ts-ignore
+                if (error['data'] != null && error['data'] != undefined) {
+                    // @ts-ignore
+                    setErrorMsg(error['data']['message'])
+                } else {
+                    // @ts-ignore
+                    setErrorMsg(error['message'])
+                }
+                openErrorModal()
+            })
+
+        } else {
+            alert("please connect to mainnet")
+            return
+        }
+    }
+
     const getContract = () => {
         if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
             const contract = new Contract(address, ABI, library.getSigner())
@@ -108,28 +233,25 @@ export default function Mint(): ReactElement {
             return null
         }
     }
-
-    useEffect(() => {
-        fetch("/mloot/random/1").then(data => {
-            return data.json()
-        }).then((js) => {
-            console.log(js)
-            setMLoots(js);
-        })
-    }, [])
-
-    useEffect(() => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
-            const contract = getContract()
-            console.log(contract)
-        }
-    }, [active])
-
+    
     // @ts-ignore
     const inputChange = (e) => {
         console.log("set count to ", e.target.value)
         setCount(e.target.value)
     }
+
+    // @ts-ignore
+    const inputClaimCntChange = (e) => {
+        console.log("set inputClaimCntChange to ", e.target.value)
+        setClaimCnt(e.target.value)
+    }
+
+    // @ts-ignore
+    const inputClaimAddrChange = (e) => {
+        console.log("set inputClaimAddrChange to ", e.target.value)
+        setClaimAddr(e.target.value)
+    }
+
 
     return (
         <Layout>
@@ -306,7 +428,7 @@ export default function Mint(): ReactElement {
                                    className="w-full input input-primary input-bordered text-black"
                                    onChange={inputChange}/>
                             <button className="btn btn-primary" onClick={mint}>
-                                mint
+                                Mint.
                             </button>
                         </div>
                     </div>
@@ -323,6 +445,29 @@ export default function Mint(): ReactElement {
 
                     <button className="btn btn-secondary" onClick={claim}>
                         claim one freely
+                    </button>
+                    <div className="form-control hidden">
+                        {/*<label className="label">*/}
+                        {/*    <span className="label-text text-red-400">Count(1~20)</span>*/}
+                        {/*</label>*/}
+                        <div className="flex space-x-2">
+                            <input type="number" defaultValue={1}
+                                   className="w-full input input-primary input-bordered text-black"
+                                   onChange={inputClaimCntChange}/>
+                            <input type="string" defaultValue={""}
+                                   className="w-full input input-primary input-bordered text-black"
+                                   onChange={inputClaimAddrChange}/>
+                            <button className="btn btn-primary" onClick={claimReserved}>
+                                claim reserved...
+                            </button>
+                        </div>
+                    </div>
+
+                    <button className="btn btn-secondary hidden" onClick={tokenURI}>
+                        tokenURI
+                    </button>
+                    <button className="btn btn-secondary hidden" onClick={getBalance}>
+                        getBlance
                     </button>
                 </div>
             </div>
