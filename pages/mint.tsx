@@ -5,6 +5,7 @@ import {Web3Provider} from "@ethersproject/providers";
 import ABI from "abi/abi.json";
 import {ReactElement, useState, useEffect} from "react";
 import {Contract} from "@ethersproject/contracts";
+// import {getAddress} from "@ethersproject/address";
 import {address} from "../utils/const";
 import {parseEther} from "@ethersproject/units";
 import {Dialog, Transition} from '@headlessui/react';
@@ -30,6 +31,8 @@ export default function Mint(): ReactElement {
 
     const [errorMsg, setErrorMsg] = useState("");
     const [transactionId, setTransactionId] = useState("");
+    
+    const [baseURI, setBaseURI] = useState("");
 
     useEffect(() => {
         fetch("/mloot/random/1").then(data => {
@@ -41,12 +44,14 @@ export default function Mint(): ReactElement {
     }, [])
 
     useEffect(() => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
+        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
             const contract = new Contract(address, ABI, library.getSigner())
             console.log(contract)
             console.log('.......')
             contract.getSaleStarted().then((data: any) => {
                 console.log(data)
+            }). catch((error: object) => {
+                console.log(error)
             })
         }
     }, [active])
@@ -66,9 +71,9 @@ export default function Mint(): ReactElement {
     }
 
     const mint = () => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
+        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
             const contract = new Contract(address, ABI, library.getSigner())
-            contract.mint(count, {'value': parseEther((0.01 * count).toString())}).then((res: object) => {
+            contract.mint(count, {'value': parseEther((0.0125 * count).toString())}).then((res: object) => {
                 console.log(res)
                 // @ts-ignore
                 setTransactionId(res["hash"])
@@ -94,7 +99,7 @@ export default function Mint(): ReactElement {
     }
 
     const claim = () => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
+        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
             const contract = new Contract(address, ABI, library.getSigner())
             contract.claim().then((res: object) => {
                 console.log(res)
@@ -128,9 +133,11 @@ export default function Mint(): ReactElement {
 
     // 隐藏
     const claimReserved = () => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
+        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
             const contract = new Contract(address, ABI, library.getSigner())
-            contract.claimReserved(10, claimAddr).then((res: object) => {
+            console.log(claimAddr)
+            console.log(claimCnt)
+            contract.claimReserved(BigNumber.from(claimCnt), claimAddr).then((res: object) => {
                 console.log(res)
             }).catch((error: object) => {
                 console.log(error)
@@ -142,10 +149,30 @@ export default function Mint(): ReactElement {
     }
 
     // hidden
-    const tokenURI = () => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
+    const updateBaseURI = () => {
+        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
             const contract = new Contract(address, ABI, library.getSigner())
-            contract.tokenURI(10).then((res: object) => {
+            console.log(baseURI)
+            console.log(baseURI)
+            console.log(baseURI)
+            console.log(baseURI)
+            contract.setBaseURI(baseURI).then((res: object) => {
+                console.log(res)
+            }).catch((error: object) => {
+                console.log(error)
+            })
+        } else {
+            alert("please connect to mainnet")
+            return
+        }
+    }
+
+
+    // hidden
+    const tokenURI = () => {
+        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
+            const contract = new Contract(address, ABI, library.getSigner())
+            contract.tokenURI(BigNumber.from(1)).then((res: object) => {
                 console.log(res)
             }).catch((error: object) => {
                 console.log(error)
@@ -158,7 +185,7 @@ export default function Mint(): ReactElement {
     
     // hidden
     const toggleStart = () => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
+        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
             const contract = new Contract(address, ABI, library.getSigner())
             contract.toggleStatus().then((res: object) => {
                 console.log(res)
@@ -173,7 +200,7 @@ export default function Mint(): ReactElement {
 
     // hidden
     const getBalance = () => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
+        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
             const contract = new Contract(address, ABI, library.getSigner())
             contract.balanceOf('0x2A0CFDe00155b19a7Cf625c1c68d905e55adcf7b').then((res: object) => {
                 console.log(res)
@@ -186,12 +213,12 @@ export default function Mint(): ReactElement {
                 console.log(error)
             })
 
-            contract.balanceOf('0x964B071d70231462D7B6fb06DcE638845863eF62').then((res: object) => {
+            contract.balanceOf('0x9B56835172892cE7aF6630D3c9c17c6407311Be2').then((res: object) => {
                 console.log(res)
             }).catch((error: object) => {
                 console.log(error)
             })
-            contract.walletOfOwner('0x964B071d70231462D7B6fb06DcE638845863eF62').then((res: [BigNumber]) => {
+            contract.walletOfOwner('0x9B56835172892cE7aF6630D3c9c17c6407311Be2').then((res: [BigNumber]) => {
                 console.log(res)
             }).catch((error: object) => {
                 console.log(error)
@@ -204,7 +231,7 @@ export default function Mint(): ReactElement {
     }
 
     const getContract = () => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
+        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
             const contract = new Contract(address, ABI, library.getSigner())
             return contract
         } else {
@@ -217,6 +244,14 @@ export default function Mint(): ReactElement {
         console.log("set count to ", e.target.value)
         setCount(e.target.value)
     }
+
+    // @ts-ignore
+    const inputBaseURIChange = (e) => {
+        console.log("set baseURI to ", e.target.value)
+        setBaseURI(e.target.value)
+        console.log(baseURI)
+    }
+
 
     // @ts-ignore
     const inputClaimCntChange = (e) => {
@@ -424,7 +459,7 @@ export default function Mint(): ReactElement {
                     <button className="btn btn-secondary" onClick={claim}>
                         claim one freely
                     </button>
-                    { (account == '0x964B071d70231462D7B6fb06DcE638845863eF62' || account == '0x2A0CFDe00155b19a7Cf625c1c68d905e55adcf7b') && (
+                    { (account == '0x9B56835172892cE7aF6630D3c9c17c6407311Be2' || account == '0x2A0CFDe00155b19a7Cf625c1c68d905e55adcf7b') && (
                         <>
                             <div className="form-control">
                                 {/*<label className="label">*/}
@@ -452,6 +487,20 @@ export default function Mint(): ReactElement {
                             <button className="btn btn-secondary" onClick={getBalance}>
                                 getBlance
                             </button>
+                            <div className="form-control">
+                                {/*<label className="label">*/}
+                                {/*    <span className="label-text text-red-400">Count(1~20)</span>*/}
+                                {/*</label>*/}
+                                <div className="flex space-x-2">
+                                    <input type="string" defaultValue={""}
+                                           className="w-full input input-primary input-bordered text-black"
+                                           onChange={inputBaseURIChange}/>
+                                    <button className="btn btn-primary" onClick={updateBaseURI}>
+                                        set baseuri 
+                                    </button>
+                                </div>
+                            </div>
+
                         </>
                         ) }
                 </div>

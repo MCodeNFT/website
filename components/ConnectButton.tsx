@@ -22,7 +22,7 @@ export default function ConnectButton(): ReactElement {
 
     return (
         <div>
-            {active && (chainId === 1 || chainId === 1337 || chainId === 5777) && (
+            {active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3) && (
                 <button onClick={connect} className="px-2 py-1 rounded-md bg-red-500 text-gray-900">
                     Connected {shorter(account)}
                 </button>
@@ -32,7 +32,7 @@ export default function ConnectButton(): ReactElement {
                     <div>Connect Wallet</div>
                 </button>
             )}
-            {active && chainId !== 1 && chainId !== 1337 && chainId !== 5777 && (
+            {active && chainId !== 1 && chainId !== 1337 && chainId !== 5777 && chainId !== 3 && (
                 <div data-tip="Please switch to Mainnet" className="tooltip tooltip-open tooltip-bottom">
                     <button className="px-2 py-1 rounded-md bg-red-500 text-gray-900">
                         <div>Wrong Network</div>

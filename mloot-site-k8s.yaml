@@ -32,6 +32,6 @@ spec:
         imagePullPolicy: Always
         env:
           - name: ContractAddress
-            value: "0xcB2172d47354ef9243628F89A1FdC1c30139BEcb"
+            value: "0x398d6b3F278247B5CE1f2b38a16Cc1302546DFb8"
         ports:
         - containerPort: 3000

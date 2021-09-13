@@ -1,5 +1,5 @@
 
-export const address = process.env.ContractAddress || "0xBD2B0dfd5225ABAD366b1EbB427aA6ae6f301e5A";
+export const address = process.env.ContractAddress || "0xd514D12Af3613b2BCD0089C6ce69A4c190904E4d";
 
 
 console.log(address)
