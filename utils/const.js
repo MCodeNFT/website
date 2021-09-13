@@ -1,2 +1,5 @@
 
-export const address = "0xe47825dE9Adab2b88e3627197073E1A506d45992";
+export const address = process.env.ContractAddress || "0xBD2B0dfd5225ABAD366b1EbB427aA6ae6f301e5A";
+
+
+console.log(address)

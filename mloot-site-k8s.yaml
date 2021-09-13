@@ -30,5 +30,8 @@ spec:
       - name: mloot-site
         image: docker.io/ligulfzhou53/mloot-site
         imagePullPolicy: Always
+        env:
+          - name: ContractAddress
+            value: "0xcB2172d47354ef9243628F89A1FdC1c30139BEcb"
         ports:
         - containerPort: 3000

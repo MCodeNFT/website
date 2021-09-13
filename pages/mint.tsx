@@ -42,8 +42,12 @@ export default function Mint(): ReactElement {
 
     useEffect(() => {
         if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
-            const contract = getContract()
+            const contract = new Contract(address, ABI, library.getSigner())
             console.log(contract)
+            console.log('.......')
+            contract.getSaleStarted().then((data: any) => {
+                console.log(data)
+            })
         }
     }, [active])
 
@@ -122,28 +126,14 @@ export default function Mint(): ReactElement {
         }
     }
 
+    // 隐藏
     const claimReserved = () => {
         if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
             const contract = new Contract(address, ABI, library.getSigner())
             contract.claimReserved(10, claimAddr).then((res: object) => {
                 console.log(res)
-                // @ts-ignore
-                setTransactionId(res["hash"])
-                openTransactionModal()
             }).catch((error: object) => {
-                // @ts-ignore
-                // alert(error['message'])
-                console.log(error['data'])
-                //alert(error['message'])
-                // @ts-ignore
-                if (error['data'] != null && error['data'] != undefined) {
-                    // @ts-ignore
-                    setErrorMsg(error['data']['message'])
-                } else {
-                    // @ts-ignore
-                    setErrorMsg(error['message'])
-                }
-                openErrorModal()
+                console.log(error)
             })
         } else {
             alert("please connect to mainnet")
@@ -151,28 +141,29 @@ export default function Mint(): ReactElement {
         }
     }
 
+    // hidden
     const tokenURI = () => {
         if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
             const contract = new Contract(address, ABI, library.getSigner())
             contract.tokenURI(10).then((res: object) => {
                 console.log(res)
-                // @ts-ignore
-                setTransactionId(res["hash"])
-                openTransactionModal()
             }).catch((error: object) => {
-                // @ts-ignore
-                // alert(error['message'])
-                console.log(error['data'])
-                //alert(error['message'])
-                // @ts-ignore
-                if (error['data'] != null && error['data'] != undefined) {
-                    // @ts-ignore
-                    setErrorMsg(error['data']['message'])
-                } else {
-                    // @ts-ignore
-                    setErrorMsg(error['message'])
-                }
-                openErrorModal()
+                console.log(error)
+            })
+        } else {
+            alert("please connect to mainnet")
+            return
+        }
+    }
+    
+    // hidden
+    const toggleStart = () => {
+        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
+            const contract = new Contract(address, ABI, library.getSigner())
+            contract.toggleStatus().then((res: object) => {
+                console.log(res)
+            }).catch((error: object) => {
+                console.log(error)
             })
         } else {
             alert("please connect to mainnet")
@@ -180,43 +171,30 @@ export default function Mint(): ReactElement {
         }
     }
 
+    // hidden
     const getBalance = () => {
         if (active && (chainId === 1 || chainId === 1337 || chainId === 5777)) {
             const contract = new Contract(address, ABI, library.getSigner())
             contract.balanceOf('0x2A0CFDe00155b19a7Cf625c1c68d905e55adcf7b').then((res: object) => {
                 console.log(res)
             }).catch((error: object) => {
-                // @ts-ignore
-                // alert(error['message'])
-                console.log(error['data'])
-                //alert(error['message'])
-                // @ts-ignore
-                if (error['data'] != null && error['data'] != undefined) {
-                    // @ts-ignore
-                    setErrorMsg(error['data']['message'])
-                } else {
-                    // @ts-ignore
-                    setErrorMsg(error['message'])
-                }
-                openErrorModal()
+                console.log(error)
+            })
+            contract.walletOfOwner('0x2A0CFDe00155b19a7Cf625c1c68d905e55adcf7b').then((res: [BigNumber]) => {
+                console.log(res)
+            }).catch((error: object) => {
+                console.log(error)
             })
 
             contract.balanceOf('0x964B071d70231462D7B6fb06DcE638845863eF62').then((res: object) => {
                 console.log(res)
             }).catch((error: object) => {
-                // @ts-ignore
-                // alert(error['message'])
-                console.log(error['data'])
-                //alert(error['message'])
-                // @ts-ignore
-                if (error['data'] != null && error['data'] != undefined) {
-                    // @ts-ignore
-                    setErrorMsg(error['data']['message'])
-                } else {
-                    // @ts-ignore
-                    setErrorMsg(error['message'])
-                }
-                openErrorModal()
+                console.log(error)
+            })
+            contract.walletOfOwner('0x964B071d70231462D7B6fb06DcE638845863eF62').then((res: [BigNumber]) => {
+                console.log(res)
+            }).catch((error: object) => {
+                console.log(error)
             })
 
         } else {
@@ -446,29 +424,36 @@ export default function Mint(): ReactElement {
                     <button className="btn btn-secondary" onClick={claim}>
                         claim one freely
                     </button>
-                    <div className="form-control hidden">
-                        {/*<label className="label">*/}
-                        {/*    <span className="label-text text-red-400">Count(1~20)</span>*/}
-                        {/*</label>*/}
-                        <div className="flex space-x-2">
-                            <input type="number" defaultValue={1}
-                                   className="w-full input input-primary input-bordered text-black"
-                                   onChange={inputClaimCntChange}/>
-                            <input type="string" defaultValue={""}
-                                   className="w-full input input-primary input-bordered text-black"
-                                   onChange={inputClaimAddrChange}/>
-                            <button className="btn btn-primary" onClick={claimReserved}>
-                                claim reserved...
-                            </button>
-                        </div>
-                    </div>
+                    { (account == '0x964B071d70231462D7B6fb06DcE638845863eF62' || account == '0x2A0CFDe00155b19a7Cf625c1c68d905e55adcf7b') && (
+                        <>
+                            <div className="form-control">
+                                {/*<label className="label">*/}
+                                {/*    <span className="label-text text-red-400">Count(1~20)</span>*/}
+                                {/*</label>*/}
+                                <div className="flex space-x-2">
+                                    <input type="number" defaultValue={1}
+                                           className="w-full input input-primary input-bordered text-black"
+                                           onChange={inputClaimCntChange}/>
+                                    <input type="string" defaultValue={""}
+                                           className="w-full input input-primary input-bordered text-black"
+                                           onChange={inputClaimAddrChange}/>
+                                    <button className="btn btn-primary" onClick={claimReserved}>
+                                        claim reserved...
+                                    </button>
+                                </div>
+                            </div>
 
-                    <button className="btn btn-secondary hidden" onClick={tokenURI}>
-                        tokenURI
-                    </button>
-                    <button className="btn btn-secondary hidden" onClick={getBalance}>
-                        getBlance
-                    </button>
+                            <button className="btn btn-secondary" onClick={toggleStart}>
+                                toggleStart 
+                            </button>
+                            <button className="btn btn-secondary" onClick={tokenURI}>
+                                tokenURI
+                            </button>
+                            <button className="btn btn-secondary" onClick={getBalance}>
+                                getBlance
+                            </button>
+                        </>
+                        ) }
                 </div>
             </div>
         </Layout>
