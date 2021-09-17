@@ -1,16 +1,16 @@
 import Link from "next/link";
 import Layout from "@components/Layout";
 import {useWeb3React} from "@web3-react/core";
-import {Web3Provider} from "@ethersproject/providers";
+import {Web3Provider, InfuraProvider, getDefaultProvider} from "@ethersproject/providers";
 import ABI from "abi/abi.json";
 import {ReactElement, useState, useEffect} from "react";
 import {Contract} from "@ethersproject/contracts";
-// import {getAddress} from "@ethersproject/address";
 import {address} from "../utils/const";
 import {parseEther} from "@ethersproject/units";
 import {Dialog, Transition} from '@headlessui/react';
 import {Fragment} from 'react';
 import {BigNumber, parseFixed} from "@ethersproject/bignumber";
+import { ethers } from "ethers";
 
 
 interface MlootNft {
@@ -19,9 +19,10 @@ interface MlootNft {
 }
 
 export default function Mint(): ReactElement {
+    const {active, account, activate, chainId, library} = useWeb3React<Web3Provider>();
+    
     const [mloots, setMLoots] = useState<Array<MlootNft>>([]);
     const [count, setCount] = useState(1);
-    const {active, account, activate, chainId, library} = useWeb3React();
     const [left, setLeft] = useState(0);
     const [isErrorOpen, setIsErrorOpen] = useState(false)
     const [isTransactionOpen, setIsTransactionOpen] = useState(false);
@@ -35,7 +36,7 @@ export default function Mint(): ReactElement {
     const [baseURI, setBaseURI] = useState("");
 
     useEffect(() => {
-        fetch("/mloot/random/1").then(data => {
+        fetch("/mcode/random/1").then(data => {
             return data.json()
         }).then((js) => {
             console.log(js)
@@ -43,12 +44,24 @@ export default function Mint(): ReactElement {
         })
     }, [])
 
+    const ifConnected = () => {
+        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 4)) {
+            return true
+        } else {
+            return false
+        }
+    }
+    
     useEffect(() => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
-            const contract = new Contract(address, ABI, library.getSigner())
-            console.log(contract)
-            console.log('.......')
-            contract.getSaleStarted().then((data: any) => {
+        if (ifConnected()) {
+            
+            // @ts-ignore
+            const provider = ethers.getDefaultProvider(chainId, {'infura': '786649a580e3441f996da22488a8742a'});
+            const contract = new ethers.Contract(address, ABI, provider);
+            
+            // @ts-ignore
+            console.log(library.getSigner(account))
+            contract.getReservedLeft().then((data: any) => {
                 console.log(data)
             }). catch((error: object) => {
                 console.log(error)
@@ -71,7 +84,8 @@ export default function Mint(): ReactElement {
     }
 
     const mint = () => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
+        if (ifConnected()) {
+            // @ts-ignore
             const contract = new Contract(address, ABI, library.getSigner())
             contract.mint(count, {'value': parseEther((0.0125 * count).toString())}).then((res: object) => {
                 console.log(res)
@@ -80,7 +94,6 @@ export default function Mint(): ReactElement {
                 openTransactionModal()
             }).catch((error: object) => {
                 // @ts-ignore
-                
                 console.log(error['data'])
                //alert(error['message'])
                 // @ts-ignore
@@ -99,7 +112,8 @@ export default function Mint(): ReactElement {
     }
 
     const claim = () => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
+        if (ifConnected()) {
+            // @ts-ignore
             const contract = new Contract(address, ABI, library.getSigner())
             contract.claim().then((res: object) => {
                 console.log(res)
@@ -124,6 +138,8 @@ export default function Mint(): ReactElement {
             })
             contract.totalSupply().then((res: BigNumber) => {
                 console.log("totalsupply: " + res.toNumber())
+            }).catch((error: object) => {
+                console.log(error)
             })
         } else {
             alert("please connect to mainnet")
@@ -133,7 +149,8 @@ export default function Mint(): ReactElement {
 
     // 隐藏
     const claimReserved = () => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
+        if (ifConnected()) {
+            // @ts-ignore
             const contract = new Contract(address, ABI, library.getSigner())
             console.log(claimAddr)
             console.log(claimCnt)
@@ -150,12 +167,9 @@ export default function Mint(): ReactElement {
 
     // hidden
     const updateBaseURI = () => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
+        if (ifConnected()) {
+            // @ts-ignore
             const contract = new Contract(address, ABI, library.getSigner())
-            console.log(baseURI)
-            console.log(baseURI)
-            console.log(baseURI)
-            console.log(baseURI)
             contract.setBaseURI(baseURI).then((res: object) => {
                 console.log(res)
             }).catch((error: object) => {
@@ -167,10 +181,10 @@ export default function Mint(): ReactElement {
         }
     }
 
-
     // hidden
     const tokenURI = () => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
+        if (ifConnected()) {
+            // @ts-ignore
             const contract = new Contract(address, ABI, library.getSigner())
             contract.tokenURI(BigNumber.from(1)).then((res: object) => {
                 console.log(res)
@@ -185,7 +199,8 @@ export default function Mint(): ReactElement {
     
     // hidden
     const toggleStart = () => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
+        if (ifConnected()) {
+            // @ts-ignore
             const contract = new Contract(address, ABI, library.getSigner())
             contract.toggleStatus().then((res: object) => {
                 console.log(res)
@@ -199,31 +214,32 @@ export default function Mint(): ReactElement {
     }
 
     // hidden
-    const getBalance = () => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
+    const withdraw = () => {
+        if (ifConnected()) {
+            // @ts-ignore
             const contract = new Contract(address, ABI, library.getSigner())
-            contract.balanceOf('0x2A0CFDe00155b19a7Cf625c1c68d905e55adcf7b').then((res: object) => {
+            contract.withdraw().then((res: object) => {
                 console.log(res)
             }).catch((error: object) => {
                 console.log(error)
             })
-            contract.walletOfOwner('0x2A0CFDe00155b19a7Cf625c1c68d905e55adcf7b').then((res: [BigNumber]) => {
-                console.log(res)
-            }).catch((error: object) => {
-                console.log(error)
-            })
+        } else {
+            alert("please connect to mainnet")
+            return
+        }
+    }
 
-            contract.balanceOf('0x9B56835172892cE7aF6630D3c9c17c6407311Be2').then((res: object) => {
+    // hidden
+    const getBalance = () => {
+        if (ifConnected()) {
+            console.log(account)
+            // @ts-ignore
+            const contract = new Contract(address, ABI, library.getSigner(account))
+            contract.balanceOf(account).then((res: any) => {
                 console.log(res)
-            }).catch((error: object) => {
+            }).catch((error: any) => {
                 console.log(error)
             })
-            contract.walletOfOwner('0x9B56835172892cE7aF6630D3c9c17c6407311Be2').then((res: [BigNumber]) => {
-                console.log(res)
-            }).catch((error: object) => {
-                console.log(error)
-            })
-
         } else {
             alert("please connect to mainnet")
             return
@@ -231,7 +247,8 @@ export default function Mint(): ReactElement {
     }
 
     const getContract = () => {
-        if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3)) {
+        if (ifConnected()) {
+            // @ts-ignore
             const contract = new Contract(address, ABI, library.getSigner())
             return contract
         } else {
@@ -251,7 +268,6 @@ export default function Mint(): ReactElement {
         setBaseURI(e.target.value)
         console.log(baseURI)
     }
-
 
     // @ts-ignore
     const inputClaimCntChange = (e) => {
@@ -416,16 +432,16 @@ export default function Mint(): ReactElement {
 
                 <div className="lg:flex-grow md:w-2/3 lg:pl-24 md:pl-16 flex flex-col md:items-start md:text-left">
                     <h1 className="title-font sm:text-4xl text-3xl mb-4 font-medium text-white">
-                        Mint MLoot
+                        Mint MCode
                     </h1>
                     <p className="leading-relaxed text-xl">
-                        1: Mint at 0.01Ξ(ETH) each.
+                        1: Mint at 0.0125Ξ(ETH) each.
                     </p>
                     <p>
-                        - Please select the number of MLoots you wish to buy then click MINT button.
+                        - Please select the number of MCodes you wish to buy then click MINT button.
                     </p>
                     <p>
-                        - A maximum of 20 MLoots can be minted at a time.
+                        - A maximum of 20 MCodes can be minted at a time.
                     </p>
                     <p className="text-red-500">
                         - All mint fee will be donated to the poor by <a href="https://www.givedirectly.org"
@@ -433,9 +449,6 @@ export default function Mint(): ReactElement {
                                                                          className="underline text-red-500">givedirectly.org</a>.
                     </p>
                     <div className="form-control">
-                        {/*<label className="label">*/}
-                        {/*    <span className="label-text text-red-400">Count(1~20)</span>*/}
-                        {/*</label>*/}
                         <div className="flex space-x-2">
                             <input type="number" defaultValue={1}
                                    className="w-full input input-primary input-bordered text-black"
@@ -450,10 +463,10 @@ export default function Mint(): ReactElement {
                         2: Claim one by free.
                     </p>
                     <p>
-                        - One address can only claim 3 MLoots.
+                        - One address can only claim 1 MCode.
                     </p>
                     <p>
-                        - Only one MLoot can be claimed at a time.
+                        - You can not claim it if you already have one.
                     </p>
 
                     <button className="btn btn-secondary" onClick={claim}>
@@ -462,9 +475,6 @@ export default function Mint(): ReactElement {
                     { (account == '0x9B56835172892cE7aF6630D3c9c17c6407311Be2' || account == '0x2A0CFDe00155b19a7Cf625c1c68d905e55adcf7b') && (
                         <>
                             <div className="form-control">
-                                {/*<label className="label">*/}
-                                {/*    <span className="label-text text-red-400">Count(1~20)</span>*/}
-                                {/*</label>*/}
                                 <div className="flex space-x-2">
                                     <input type="number" defaultValue={1}
                                            className="w-full input input-primary input-bordered text-black"
@@ -486,6 +496,9 @@ export default function Mint(): ReactElement {
                             </button>
                             <button className="btn btn-secondary" onClick={getBalance}>
                                 getBlance
+                            </button>
+                            <button className="btn btn-secondary" onClick={withdraw}>
+                                withdraw
                             </button>
                             <div className="form-control">
                                 {/*<label className="label">*/}

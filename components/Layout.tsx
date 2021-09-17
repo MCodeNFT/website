@@ -22,32 +22,32 @@ export default function Layout({
 function Head(): ReactElement {
   return (
     <HTMLHead>
-      <title>MLoot</title>
-      <meta name="title" content="MLoot" />
+      <title>MCode</title>
+      <meta name="title" content="MCode" />
       <meta
         name="description"
-        content="MLoot is randomly generated with 12 english mnemonic words and stored on chain."
+        content="MCode is randomly generated with 12 english mnemonic words and stored on chain."
       />
 
       {/* OG + Faceook */}
       <meta property="og:type" content="website" />
-      <meta property="og:url" content="https://www.mlootproject.com/" />
-      <meta property="og:title" content="MLoot" />
+      <meta property="og:url" content="https://www.mnemonic.codes/" />
+      <meta property="og:title" content="MCode" />
       <meta
         property="og:description"
-        content="MLoot is randomly generated with 12 english mnemonic words and stored on chain."
+        content="MCode is randomly generated with 12 english mnemonic words and stored on chain."
       />
-      <meta property="og:image" content="https://mlootproject.com/meta.png" />
+      <meta property="og:image" content="https://mnemonic.codes/meta.png" />
 
       {/* Twitter */}
       <meta property="twitter:card" content="summary_large_image" />
-      <meta property="twitter:url" content="https://www.mlootproject.com/" />
-      <meta property="twitter:title" content="MLoot" />
+      <meta property="twitter:url" content="https://www.mnemonic.codes/" />
+      <meta property="twitter:title" content="MCode" />
       <meta
         property="twitter:description"
-        content="MLoot is randomly generated with 12 english mnemonic words and stored on chain."
+        content="MCode is randomly generated with 12 english mnemonic words and stored on chain."
       />
-      <meta property="twitter:image" content="https://mlootproject.com/meta.png" />
+      <meta property="twitter:image" content="https://mnemonic.codes/meta.png" />
 
       {/* Font */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -82,7 +82,7 @@ function Header() {
     <div className="flex flex-row px-5 py-5 m-auto justify-around justify-items-center">
       <div className="text-3xl hover:opacity-80">
         <Link href="/">
-          <a className="">MLoot</a>
+          <a className="">MCode</a>
         </Link>
       </div>
 
@@ -109,7 +109,7 @@ function Footer(): ReactElement {
       <p>
         This website is{" "}
         <a
-          href="https://github.com/mlootproject/website"
+          href="https://github.com/MCodeNFT/website"
           target="_blank"
           rel="noopener noreferrer"
           className="underline"

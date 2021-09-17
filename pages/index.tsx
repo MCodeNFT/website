@@ -14,7 +14,7 @@ export default function Home(): ReactElement {
     const [mloots, setMLoots] = useState<Array<MlootNft>>([]);
 
     useEffect(() => {
-        fetch("/mloot/random/4").then(data => {
+        fetch("/mcode/random/4").then(data => {
             return data.json()
         }).then((js) => {
             console.log(js)
@@ -26,19 +26,19 @@ export default function Home(): ReactElement {
         <Layout>
             <div>
                 <div className="m-auto px-1 py-7 text-center">
-                    <h2 className="text-7xl m-auto">MLoot - Mnemonic Loot</h2>
+                    <h2 className="text-7xl m-auto">MCode - Mnemonic Codes</h2>
                     <div className="flex flex-row justify-center py-3 text-2xl">
-                            <a className="p-2" rel="noreferrer" target="_blank" href="https://twitter.com/mlootproject">Twitter</a>
+                            <a className="p-2" rel="noreferrer" target="_blank" href="https://twitter.com/">Twitter</a>
                             <a className="p-2" rel="noreferrer" target="_blank" href="">Discord</a>
                     </div>
                     <p className="text-gray-400 text-xl">
-                        MLoot is randomly generate with english mnemonic words. 
+                        MCode is randomly generate with english mnemonic words.
                         <br/>It combines with 12 words and stored on chain.
-                        <br/> Feel free to use MLoot in any way you want.
+                        <br/> Feel free to use MCode in any way you want.
                     </p>
                 </div>
 
-                <p className="text-lg pt-2 text-center pt-8">How MLoot Generated</p>
+                <p className="text-lg pt-2 text-center pt-8">How MCode Generated</p>
                 <div className="mockup-code max-w-lg m-auto bg-neutral pt-3">
                   <pre data-prefix="$" className="text-white">
                     <code>pip3 install mnemonic</code>
@@ -61,7 +61,7 @@ export default function Home(): ReactElement {
                 </div>
 
                 <div className="py-8 m-auto text-center">
-                    <span>Example Bags:</span>
+                    <span>Example MCode:</span>
                     <div className="container px-5 py-3 mx-auto">
                         <div className="flex flex-row gap-2">
                             { mloots.map(({id, word_list}, i)=> (

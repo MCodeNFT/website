@@ -1,5 +1,4 @@
 import 'tailwindcss/tailwind.css';
-
 import type { AppProps } from "next/app";
 
 import { Web3ReactProvider } from '@web3-react/core'
@@ -11,6 +10,7 @@ function getLibrary(provider: any): Web3Provider {
   return library
 }
 
+// Export application
 export default function LootRNG({ Component, pageProps }: AppProps) {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>

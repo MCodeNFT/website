@@ -2,15 +2,12 @@ import {shorter} from "../utils/utils";
 import {ReactElement, useEffect } from "react";
 import {useWeb3React} from "@web3-react/core";
 import {Web3Provider} from "@ethersproject/providers";
-import { InjectedConnector } from "@web3-react/injected-connector";
+// import { InjectedConnector } from "@web3-react/injected-connector";
+import { injected } from "../utils/connectors";
 
-
-export const injected = new InjectedConnector({
-    // supportedChainIds: [
-    //     1,
-    //     1337
-    // ]
-})
+// export const injected = new InjectedConnector({
+//     supportedChainIds: [1, 3, 4, 5, 1337]
+// })
 
 export default function ConnectButton(): ReactElement {
     const {active, account, activate, chainId} = useWeb3React();
@@ -22,7 +19,7 @@ export default function ConnectButton(): ReactElement {
 
     return (
         <div>
-            {active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 3) && (
+            {active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 4) && (
                 <button onClick={connect} className="px-2 py-1 rounded-md bg-red-500 text-gray-900">
                     Connected {shorter(account)}
                 </button>
@@ -32,7 +29,7 @@ export default function ConnectButton(): ReactElement {
                     <div>Connect Wallet</div>
                 </button>
             )}
-            {active && chainId !== 1 && chainId !== 1337 && chainId !== 5777 && chainId !== 3 && (
+            {active && chainId !== 1 && chainId !== 1337 && chainId !== 5777 && chainId !== 4 && (
                 <div data-tip="Please switch to Mainnet" className="tooltip tooltip-open tooltip-bottom">
                     <button className="px-2 py-1 rounded-md bg-red-500 text-gray-900">
                         <div>Wrong Network</div>
