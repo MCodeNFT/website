@@ -31,7 +31,9 @@ spec:
         image: docker.io/ligulfzhou53/mcode-site
         imagePullPolicy: Always
         env:
-          - name: ContractAddress
+          - name: MainnetContractAddress
+            value: "0x398d6b3F278247B5CE1f2b38a16Cc1302546DFb8"
+          - name: RinkebyContractAddress
             value: "0x9c886f1e9c25b35573f31129182fcff92198cd9a"
         ports:
         - containerPort: 3000

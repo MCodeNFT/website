@@ -1,20 +1,47 @@
-import {shorter} from "../utils/utils";
-import {ReactElement, useEffect } from "react";
+import {shorter} from "@utils/utils";
+import {ReactElement, useEffect, useState} from "react";
 import {useWeb3React} from "@web3-react/core";
-import {Web3Provider} from "@ethersproject/providers";
-// import { InjectedConnector } from "@web3-react/injected-connector";
-import { injected } from "../utils/connectors";
+import { injected } from "@utils/connectors";
+import {fail} from "assert";
 
-// export const injected = new InjectedConnector({
-//     supportedChainIds: [1, 3, 4, 5, 1337]
-// })
 
 export default function ConnectButton(): ReactElement {
     const {active, account, activate, chainId} = useWeb3React();
+    const [failed, setFailed] = useState(false);
+
+    useEffect(()=>{
+        eagerConnect()
+    }, [active, chainId])
 
     const connect = () => {
+        activate(injected, undefined, true).catch((error: any)=> {
+            if (error.name.includes('UnsupportedChainIdError')) {
+                setFailed(true)
+            }
+            console.log('activate...onCatch')
+            console.log(error)
+            console.log('activate...onCatch')
+        })
+    }
+    const eagerConnect = () => {
         console.log("connect...")
-        activate(injected)
+
+        setFailed(false)
+
+        injected.isAuthorized().then(isAuthorized => {
+            if (isAuthorized) {
+                activate(injected, undefined, true).catch((error: any)=> {
+                    if (error.name.includes('UnsupportedChainIdError')) {
+                        setFailed(true)
+                    }
+                    console.log('activate...onCatch')
+                    console.log(error)
+                    console.log('activate...onCatch')
+                })
+            } else {
+                console.log('not authorized....')
+            }
+        });
     }
 
     return (
@@ -24,19 +51,18 @@ export default function ConnectButton(): ReactElement {
                     Connected {shorter(account)}
                 </button>
             )}
-            {!active && (
+            {!active && !failed && (
                 <button onClick={connect} className="px-2 py-1 rounded-md bg-purple-400 text-gray-900">
                     <div>Connect Wallet</div>
                 </button>
             )}
-            {active && chainId !== 1 && chainId !== 1337 && chainId !== 5777 && chainId !== 4 && (
+            {(failed || (active && chainId !== 1 && chainId !== 1337 && chainId !== 5777 && chainId !== 4)) && (
                 <div data-tip="Please switch to Mainnet" className="tooltip tooltip-open tooltip-bottom">
-                    <button className="px-2 py-1 rounded-md bg-red-500 text-gray-900">
+                    <button onClick={connect} className="px-2 py-1 rounded-md bg-red-500 text-gray-900">
                         <div>Wrong Network</div>
                     </button>
                 </div>
             )}
         </div>
     )
-
 }

@@ -28,8 +28,8 @@ export default function Home(): ReactElement {
                 <div className="m-auto px-1 py-7 text-center">
                     <h2 className="text-7xl m-auto">MCode - Mnemonic Codes</h2>
                     <div className="flex flex-row justify-center py-3 text-2xl">
-                            <a className="p-2" rel="noreferrer" target="_blank" href="https://twitter.com/">Twitter</a>
-                            <a className="p-2" rel="noreferrer" target="_blank" href="">Discord</a>
+                            <a className="p-2" rel="noreferrer" target="_blank" href="https://twitter.com/MCode_NFT">Twitter</a>
+                            <a className="p-2" rel="noreferrer" target="_blank" href="https://discord.gg/b5XEZqG8">Discord</a>
                     </div>
                     <p className="text-gray-400 text-xl">
                         MCode is randomly generate with english mnemonic words.

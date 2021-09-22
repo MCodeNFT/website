@@ -1,16 +1,15 @@
-import Link from "next/link";
 import Layout from "@components/Layout";
 import {useWeb3React} from "@web3-react/core";
-import {Web3Provider, InfuraProvider, getDefaultProvider} from "@ethersproject/providers";
+import {Web3Provider} from "@ethersproject/providers";
 import ABI from "abi/abi.json";
-import {ReactElement, useState, useEffect} from "react";
+import React, {ReactElement, useState, useEffect} from "react";
 import {Contract} from "@ethersproject/contracts";
-import {address} from "../utils/const";
 import {parseEther} from "@ethersproject/units";
 import {Dialog, Transition} from '@headlessui/react';
 import {Fragment} from 'react';
 import {BigNumber, parseFixed} from "@ethersproject/bignumber";
 import { ethers } from "ethers";
+import {useAddress} from "../hooks/useAddress";
 
 
 interface MlootNft {
@@ -19,11 +18,10 @@ interface MlootNft {
 }
 
 export default function Mint(): ReactElement {
-    const {active, account, activate, chainId, library} = useWeb3React<Web3Provider>();
+    const {active, account, chainId, library} = useWeb3React<Web3Provider>();
     
     const [mloots, setMLoots] = useState<Array<MlootNft>>([]);
     const [count, setCount] = useState(1);
-    const [left, setLeft] = useState(0);
     const [isErrorOpen, setIsErrorOpen] = useState(false)
     const [isTransactionOpen, setIsTransactionOpen] = useState(false);
 
@@ -35,6 +33,13 @@ export default function Mint(): ReactElement {
     
     const [baseURI, setBaseURI] = useState("");
 
+    const [myContract, setMyContract] = useState<ethers.Contract | null>(null)
+    const [left, setLeft] = useState(0);
+    const [mintStarted, setMintStarted] = useState<boolean>(false);
+    const [claimed, setClaimed] = useState(0);
+
+    const [address, network] = useAddress();
+
     useEffect(() => {
         fetch("/mcode/random/1").then(data => {
             return data.json()
@@ -42,7 +47,55 @@ export default function Mint(): ReactElement {
             console.log(js)
             setMLoots(js);
         })
+
+        const provider = ethers.getDefaultProvider(network, {'infura': '786649a580e3441f996da22488a8742a'});
+        const contract = new ethers.Contract(address, ABI, provider);
+
+        console.log(contract)
+
+        contract.getSaleStarted().then((started: boolean)=> {
+            console.log(started)
+            setMintStarted(started)
+            console.log(mintStarted)
+        }).catch((error: any) => {
+            console.log(error)
+        })
+
+        contract.totalSupply().then((count: number)=> {
+            console.log('count: ' + count)
+            console.log(count)
+            setClaimed(count)
+        }).catch((error: any)=> {
+            console.log(error)
+        })
+
     }, [])
+
+    useEffect(() => {
+
+        if (ifConnected()) {
+            // @ts-ignore
+            const provider = ethers.getDefaultProvider(chainId, {'infura': '786649a580e3441f996da22488a8742a'});
+            console.log(address)
+            const contract = new ethers.Contract(address, ABI, provider);
+
+            setMyContract(contract)
+
+            // @ts-ignore
+            // console.log(library.getSigner(account))
+            contract.getSaleStarted().then((started: boolean)=> {
+                console.log(started)
+                setMintStarted(started)
+            }).catch((error: any) => {
+                console.log(error)
+            })
+        }
+    }, [active, chainId])
+
+
+    const ifMintStarted = ()=> {
+        return mintStarted
+    }
 
     const ifConnected = () => {
         if (active && (chainId === 1 || chainId === 1337 || chainId === 5777 || chainId == 4)) {
@@ -52,22 +105,6 @@ export default function Mint(): ReactElement {
         }
     }
     
-    useEffect(() => {
-        if (ifConnected()) {
-            
-            // @ts-ignore
-            const provider = ethers.getDefaultProvider(chainId, {'infura': '786649a580e3441f996da22488a8742a'});
-            const contract = new ethers.Contract(address, ABI, provider);
-            
-            // @ts-ignore
-            console.log(library.getSigner(account))
-            contract.getReservedLeft().then((data: any) => {
-                console.log(data)
-            }). catch((error: object) => {
-                console.log(error)
-            })
-        }
-    }, [active])
 
     const closeErrorModal = () => {
         setIsErrorOpen(false)
@@ -84,9 +121,14 @@ export default function Mint(): ReactElement {
     }
 
     const mint = () => {
+        console.log('click mint...')
         if (ifConnected()) {
             // @ts-ignore
             const contract = new Contract(address, ABI, library.getSigner())
+            if (!ifMintStarted()) {
+                alert("mint not started...")
+                return
+            }
             contract.mint(count, {'value': parseEther((0.0125 * count).toString())}).then((res: object) => {
                 console.log(res)
                 // @ts-ignore
@@ -109,6 +151,10 @@ export default function Mint(): ReactElement {
         } else {
             alert("please connect to mainnet")
         }
+    }
+
+    const notEnbled = () => {
+        console.log('...not enabled...')
     }
 
     const claim = () => {
@@ -246,20 +292,9 @@ export default function Mint(): ReactElement {
         }
     }
 
-    const getContract = () => {
-        if (ifConnected()) {
-            // @ts-ignore
-            const contract = new Contract(address, ABI, library.getSigner())
-            return contract
-        } else {
-            return null
-        }
-    }
-    
-    // @ts-ignore
-    const inputChange = (e) => {
-        console.log("set count to ", e.target.value)
-        setCount(e.target.value)
+    const inputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        console.log("set count to ", e.target.valueAsNumber)
+        setCount(e.target.valueAsNumber)
     }
 
     // @ts-ignore
@@ -414,9 +449,8 @@ export default function Mint(): ReactElement {
                 </Dialog>
             </Transition>
 
-            <div className="container mx-auto flex px-8 py-24 md:flex-row flex-col items-center">
-                <div
-                    className="lg:max-w-lg lg:w-full md:w-1/3 w-5/6 mb-10 md:mb-0 flex flex-row justify-end md:justify-center">
+            <div className="container mx-auto flex px-24 py-24 md:flex-row flex-col items-center">
+                <div className="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 mb-10 md:mb-0 flex flex-row justify-end md:justify-center">
                     {mloots.map(({id, word_list}, i) => (
                         <div className="w-96 h-96 p-2 bg-black rounded" key={i}>
                             <ul>
@@ -430,10 +464,13 @@ export default function Mint(): ReactElement {
                     ))}
                 </div>
 
-                <div className="lg:flex-grow md:w-2/3 lg:pl-24 md:pl-16 flex flex-col md:items-start md:text-left">
+                <div className="lg:flex-grow md:w-1/2 lg:pl-24 md:pl-16 flex flex-col md:pl-24 md:items-start md:text-left">
                     <h1 className="title-font sm:text-4xl text-3xl mb-4 font-medium text-white">
                         Mint MCode
                     </h1>
+                    {!mintStarted && (<div className="text-red-700 inline-block text-2xl underline">
+                        (Not Started, stay tuned)
+                    </div>)}
                     <p className="leading-relaxed text-xl">
                         1: Mint at 0.0125Ξ(ETH) each.
                     </p>
@@ -442,11 +479,6 @@ export default function Mint(): ReactElement {
                     </p>
                     <p>
                         - A maximum of 20 MCodes can be minted at a time.
-                    </p>
-                    <p className="text-red-500">
-                        - All mint fee will be donated to the poor by <a href="https://www.givedirectly.org"
-                                                                         rel="noreferrer" target="_blank"
-                                                                         className="underline text-red-500">givedirectly.org</a>.
                     </p>
                     <div className="form-control">
                         <div className="flex space-x-2">
@@ -466,58 +498,55 @@ export default function Mint(): ReactElement {
                         - One address can only claim 1 MCode.
                     </p>
                     <p>
-                        - You can not claim it if you already have one.
+                        - You can not claim it if you already have one no matter whether you have claimed one or not
                     </p>
 
                     <button className="btn btn-secondary" onClick={claim}>
                         claim one freely
                     </button>
-                    { (account == '0x9B56835172892cE7aF6630D3c9c17c6407311Be2' || account == '0x2A0CFDe00155b19a7Cf625c1c68d905e55adcf7b') && (
-                        <>
-                            <div className="form-control">
-                                <div className="flex space-x-2">
-                                    <input type="number" defaultValue={1}
-                                           className="w-full input input-primary input-bordered text-black"
-                                           onChange={inputClaimCntChange}/>
-                                    <input type="string" defaultValue={""}
-                                           className="w-full input input-primary input-bordered text-black"
-                                           onChange={inputClaimAddrChange}/>
-                                    <button className="btn btn-primary" onClick={claimReserved}>
-                                        claim reserved...
-                                    </button>
-                                </div>
-                            </div>
-
-                            <button className="btn btn-secondary" onClick={toggleStart}>
-                                toggleStart 
-                            </button>
-                            <button className="btn btn-secondary" onClick={tokenURI}>
-                                tokenURI
-                            </button>
-                            <button className="btn btn-secondary" onClick={getBalance}>
-                                getBlance
-                            </button>
-                            <button className="btn btn-secondary" onClick={withdraw}>
-                                withdraw
-                            </button>
-                            <div className="form-control">
-                                {/*<label className="label">*/}
-                                {/*    <span className="label-text text-red-400">Count(1~20)</span>*/}
-                                {/*</label>*/}
-                                <div className="flex space-x-2">
-                                    <input type="string" defaultValue={""}
-                                           className="w-full input input-primary input-bordered text-black"
-                                           onChange={inputBaseURIChange}/>
-                                    <button className="btn btn-primary" onClick={updateBaseURI}>
-                                        set baseuri 
-                                    </button>
-                                </div>
-                            </div>
-
-                        </>
-                        ) }
                 </div>
             </div>
+
+            { (account == '0x9B56835172892cE7aF6630D3c9c17c6407311Be2' || account == '0x2A0CFDe00155b19a7Cf625c1c68d905e55adcf7b') ? (
+                <div className="w-1/2 m-auto">
+                    <div className="form-control">
+                        <div className="flex space-x-2">
+                            <input type="number" defaultValue={1}
+                                   className="w-full input input-primary input-bordered text-black"
+                                   onChange={inputClaimCntChange}/>
+                            <input type="string" defaultValue={""}
+                                   className="w-full input input-primary input-bordered text-black"
+                                   onChange={inputClaimAddrChange}/>
+                            <button className="btn btn-primary" onClick={claimReserved}>
+                                claim reserved...
+                            </button>
+                        </div>
+                    </div>
+
+                    <button className="btn btn-secondary" onClick={toggleStart}>
+                        toggleStart
+                    </button>
+                    <button className="btn btn-secondary" onClick={tokenURI}>
+                        tokenURI
+                    </button>
+                    <button className="btn btn-secondary" onClick={getBalance}>
+                        getBlance
+                    </button>
+                    <button className="btn btn-secondary" onClick={withdraw}>
+                        withdraw
+                    </button>
+                    <div className="form-control">
+                        <div className="flex space-x-2">
+                            <input type="string" defaultValue={""}
+                                   className="w-full input input-primary input-bordered text-black"
+                                   onChange={inputBaseURIChange}/>
+                            <button className="btn btn-primary" onClick={updateBaseURI}>
+                                set baseuri
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            ): (<div className="hidden"></div>) }
         </Layout>
     );
 }

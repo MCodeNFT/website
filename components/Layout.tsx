@@ -87,11 +87,11 @@ function Header() {
       </div>
 
       <div className="flex text-gray-500 text-2xl justify-end flex-row">
-          {/*<Link href="/faq" >*/}
-          {/*    <a className="m-2"> FAQ </a>*/}
-          {/*</Link>*/}
+          <Link href="/faq" >
+              <a className="m-2"> FAQ </a>
+          </Link>
           <Link href="/mint">
-              <a className="m-2"> Mint </a>
+              <a className="m-2 text-red-700"> Mint </a>
           </Link>
           <ConnectButton />
       </div>
@@ -105,19 +105,33 @@ function Header() {
  */
 function Footer(): ReactElement {
   return (
-    <div className="text-center p-4">
-      <p>
-        This website is{" "}
-        <a
-          href="https://github.com/MCodeNFT/website"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline"
-        >
-          open-source
-        </a>
-        .
-      </p>
-    </div>
+      <>
+          <div className="text-center p-4">
+              <p>
+                  This project is{" "}
+                  <a
+                      href="https://github.com/MCodeNFT"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                  >
+                      open-source
+                  </a>
+                  .
+              </p>
+              <p className="text-red-700">
+                  And all revenue will be donated to the pool by{" "}
+                  <a
+                      href="https://www.givedirectly.org"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline text-red-200"
+                  >
+                      givedirectly.org
+                  </a>
+                  .
+              </p>
+          </div>
+      </>
   );
 }
